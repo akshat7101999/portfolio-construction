@@ -46,7 +46,7 @@ class BackTester:
         """
 
         # Get market returns during the backtesting time
-        historical_price_market = list(historical_price_market["Close"])
+        historical_price_market = list(historical_price_market["Close"].values)
         market_returns = [self.calculate_percentage_change(historical_price_market[i - 1], historical_price_market[i]) for i in range(1, len(historical_price_market))]
         market_returns_cumulative = np.cumsum(market_returns)
 
