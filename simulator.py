@@ -13,7 +13,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 # Styling for plots
-plt.style.use('seaborn-white')
+plt.style.use('seaborn-v0_8-whitegrid')
 plt.rc('grid', linestyle="dotted", color='#a0a0a0')
 plt.rcParams['axes.edgecolor'] = "#04383F"
 
@@ -82,7 +82,7 @@ class MontoCarloSimulator:
 		for symbol in symbol_names:
 
 			# Get symbol returns using monte carlo
-			historical_close_prices = list(portfolio_data_dictionary[symbol]["historical_prices"]["Close"])
+			historical_close_prices = list(portfolio_data_dictionary[symbol]["historical_prices"]["Close"].values)
 			future_price_predictions, _ = self.simulate_and_get_future_prices(historical_close_prices, simulation_timesteps = max(simulation_timesteps, len(list(portfolio_data_dictionary[symbol]["future_prices"]))))
 			predicted_future_returns = [self.calculate_percentage_change(future_price_predictions[i - 1], future_price_predictions[i]) for i in range(1, len(future_price_predictions))]
 			returns_matrix.append(predicted_future_returns)

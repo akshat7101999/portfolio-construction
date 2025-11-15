@@ -11,7 +11,7 @@ from strategy_manager import StrategyManager
 
 class Eiten:
     def __init__(self, args):
-        plt.style.use('seaborn-white')
+        plt.style.use('seaborn-v0_8-whitegrid')
         plt.rc('grid', linestyle="dotted", color='#a0a0a0')
         plt.rcParams['axes.edgecolor'] = "#04383F"
         plt.rcParams['figure.figsize'] = (12, 6)
@@ -52,7 +52,7 @@ class Eiten:
         returns_matrix_percentages = []
         predicted_return_vectors = []
         for i in range(0, len(historical_price_info)):
-            close_prices = list(historical_price_info[i]["Close"])
+            close_prices = list(historical_price_info[i]["Close"].values)
             log_returns = [math.log(close_prices[i] / close_prices[i - 1])
                            for i in range(1, len(close_prices))]
             percentage_returns = [self.calculate_percentage_change(
@@ -76,7 +76,6 @@ class Eiten:
         predicted_return_vectors = np.array(predicted_return_vectors)
         returns_matrix = np.array(returns_matrix)
         returns_matrix_percentages = np.array(returns_matrix_percentages)
-
         return predicted_return_vectors, returns_matrix, returns_matrix_percentages
 
     def load_data(self):
@@ -94,7 +93,6 @@ class Eiten:
             historical_price_info.append(
                 self.data_dictionary[symbol]["historical_prices"])
             future_prices.append(self.data_dictionary[symbol]["future_prices"])
-
         # Get return matrices and vectors
         predicted_return_vectors, returns_matrix, returns_matrix_percentages = self.create_returns(
             historical_price_info)

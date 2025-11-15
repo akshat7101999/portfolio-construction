@@ -13,7 +13,6 @@ class StrategyHelperFunctions:
 		"""
 		This is inspired by the excellent post @ https://srome.github.io/Eigenvesting-III-Random-Matrix-Filtering-In-Finance/
 		"""
-
 		# Calculate variance and std, will come in handy during reconstruction
 		variances = np.diag(np.cov(returns_matrix))
 		standard_deviations = np.sqrt(variances)

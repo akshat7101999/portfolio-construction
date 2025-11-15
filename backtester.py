@@ -12,7 +12,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 # Styling for plots
-plt.style.use('seaborn-white')
+plt.style.use('seaborn-v0_8-whitegrid')
 plt.rc('grid', linestyle="dotted", color='#a0a0a0')
 plt.rcParams['axes.edgecolor'] = "#04383F"
 
@@ -53,7 +53,7 @@ class BackTester:
         # Get invidiual returns for each stock in our portfolio
         normal_returns_matrix = []
         for symbol in symbol_names:
-            symbol_historical_prices = list(portfolio_data_dictionary[symbol]["historical_prices"]["Close"])
+            symbol_historical_prices = list(portfolio_data_dictionary[symbol]["historical_prices"]["Close"].values)
             symbol_historical_returns = [self.calculate_percentage_change(symbol_historical_prices[i - 1], symbol_historical_prices[i]) for i in range(1, len(symbol_historical_prices))]
             normal_returns_matrix.append(symbol_historical_returns)
 
