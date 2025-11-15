@@ -20,9 +20,47 @@ class GeneticAlgoStrategy:
 		self.iterations = 50
 		self.crossover_probability = 0.05
 
+	# def generate_portfolio(self, symbols, return_matrix):
+	# 	self.gene_length = len(symbols)
+
+	# 	# Create initial genes
+	# 	initial_genes = self.generate_initial_genes(symbols)
+
+	# 	for i in range(self.iterations):
+	# 		# Select
+	# 		top_genes = self.select(return_matrix, initial_genes)
+	# 		#print("Iteration %d Best Sharpe Ratio: %.3f" % (i, top_genes[0][0]))
+	# 		top_genes = [item[1] for item in top_genes]
+
+	# 		# Mutate
+	# 		mutated_genes = self.mutate(top_genes)
+	# 		initial_genes = mutated_genes
+
+	# 	top_genes = self.select(return_matrix, initial_genes)
+	# 	best_gene = top_genes[0][1]
+	# 	transposed_gene = np.array(best_gene).transpose() # Gene is a distribution of weights for different stocks
+	# 	return_matrix_transposed = return_matrix.transpose()
+	# 	returns = np.dot(return_matrix_transposed, transposed_gene)
+	# 	returns_cumsum = np.cumsum(returns)
+		
+	# 	ga_portfolio_weights = best_gene
+	# 	ga_portfolio_weights = dict([(symbols[x], ga_portfolio_weights[x]) for x in range(0, len(ga_portfolio_weights))])
+	# 	return ga_portfolio_weights
+
 	def generate_portfolio(self, symbols, return_matrix):
+		"""
+		Calculates portfolio weights using a Genetic Algorithm, 
+		clips negative weights to 0, and then renormalizes the remaining 
+		positive weights to sum to 1.
+		
+		This function assumes that self.generate_initial_genes, 
+		self.select, self.mutate, and self.iterations are defined 
+		elsewhere in the class.
+		"""
 		self.gene_length = len(symbols)
 
+		# 1. Genetic Algorithm Optimization
+		
 		# Create initial genes
 		initial_genes = self.generate_initial_genes(symbols)
 
@@ -37,14 +75,42 @@ class GeneticAlgoStrategy:
 			initial_genes = mutated_genes
 
 		top_genes = self.select(return_matrix, initial_genes)
-		best_gene = top_genes[0][1]
-		transposed_gene = np.array(best_gene).transpose() # Gene is a distribution of weights for different stocks
+		# The best_gene contains the raw portfolio weights (can contain negatives)
+		best_gene = top_genes[0][1] 
+		
+		# The rest of the return/cumulative return calculation is not needed 
+		# for the portfolio weights dictionary, but kept for context.
+		transposed_gene = np.array(best_gene).transpose()
 		return_matrix_transposed = return_matrix.transpose()
 		returns = np.dot(return_matrix_transposed, transposed_gene)
 		returns_cumsum = np.cumsum(returns)
 		
-		ga_portfolio_weights = best_gene
-		ga_portfolio_weights = dict([(symbols[x], ga_portfolio_weights[x]) for x in range(0, len(ga_portfolio_weights))])
+		# --- Start of Clipping and Renormalization Logic ---
+
+		# 2. Apply Clipping and Renormalization to the best_gene
+		
+		# a. Clip negative weights to 0
+		# The best_gene is a list of floats, so convert it to a NumPy array for easy manipulation
+		raw_weights = np.array(best_gene)
+		clipped_weights = np.maximum(raw_weights, 0) 
+		
+		# b. Calculate the sum of the remaining positive weights
+		sum_of_positives = np.sum(clipped_weights)
+		
+		# c. Renormalize the positive weights
+		if sum_of_positives == 0:
+			# If all weights were 0 or negative, the result is a zero portfolio
+			final_weights = np.zeros_like(clipped_weights)
+		else:
+			# Divide each clipped positive weight by the new sum to make them sum to 1
+			final_weights = clipped_weights / sum_of_positives
+		
+		# --- End of Clipping and Renormalization Logic ---
+
+		# 3. Create the Final Dictionary
+		# Use the renormalized weights
+		ga_portfolio_weights = dict([(symbols[x], final_weights[x]) for x in range(0, len(final_weights))])
+		
 		return ga_portfolio_weights
 
 	def generate_initial_genes(self, symbols):
